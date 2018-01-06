@@ -16,14 +16,14 @@ class Harviacode
 
     function connection()
     {
-        $subject = file_get_contents('../application/config/database.php');
+        $subject = file_get_contents('../application/config/development/database.php');
         $string = str_replace("defined('BASEPATH') OR exit('No direct script access allowed');", "", $subject);
-        
+
         $con = 'core/connection.php';
         $create = fopen($con, "w") or die("Change your permision folder for application and harviacode folder to 777");
         fwrite($create, $string);
         fclose($create);
-        
+
         require $con;
 
         $this->host = $db['default']['hostname'];
@@ -34,10 +34,10 @@ class Harviacode
         $this->sql = new mysqli($this->host, $this->user, $this->password, $this->database);
         if ($this->sql->connect_error)
         {
-            echo $this->sql->connect_error . ", please check 'application/config/database.php'.";
+            echo $this->sql->connect_error . ", please check 'application/config/development/database.php'.";
             die();
         }
-        
+
         unlink($con);
     }
 
@@ -95,6 +95,17 @@ class Harviacode
             $fields[] = array('column_name' => $column_name, 'column_key' => $column_key, 'data_type' => $data_type);
         }
         return $fields;
+        $stmt->close();
+        $this->sql->close();
+    }
+
+    function create_navigation($name)
+    {
+        $query = "INSERT INTO acl_resources (id, name, type, parent, created, modified)
+        VALUES ('','$name','module',NULL,NOW(),NULL)";
+        $stmt = $this->sql->prepare($query) OR die("Error code :" . $this->sql->errno . " (Gagal Input Navigation)");
+        $stmt->execute();
+        return 'Navigation Created.';
         $stmt->close();
         $this->sql->close();
     }

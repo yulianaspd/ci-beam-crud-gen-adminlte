@@ -73,6 +73,8 @@ if (isset($_POST['generate']))
         $export_pdf == 1 ? include 'core/create_pdf_library.php' : '';
         $export_pdf == 1 ? include 'core/create_view_list_pdf.php' : '';
 
+        $hasil_nav = $hc->create_navigation($c_url);
+
         $hasil[] = $hasil_controller;
         $hasil[] = $hasil_model;
         $hasil[] = $hasil_view_list;
@@ -83,6 +85,7 @@ if (isset($_POST['generate']))
         $hasil[] = $hasil_config_pagination;
         $hasil[] = $hasil_exportexcel;
         $hasil[] = $hasil_pdf;
+        $hasil[] = $hasil_nav;
     } else
     {
         $hasil[] = 'No table selected.';
