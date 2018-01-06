@@ -2,16 +2,21 @@
 
 /**
  * User management controller.
- * 
+ *
  * @package App
  * @category Controller
  * @author Ardi Soebrata
  */
-class User extends Admin_Controller 
+class User extends Admin_Controller
 {
+	protected $breadrumb = '
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Management User</li>';
+  protected $page_title = 'Users <small>Management</small>';
+
 	/**
 	 * User form definition.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $user_form = array(
@@ -61,22 +66,22 @@ class User extends Admin_Controller
 			'helper' => 'form_dropdownlabel'
 		)
 	);
-	
+
 	/**
 	 * Redirect to index if cancel-button clicked.
 	 */
 	function __construct()
 	{
 		parent::__construct();
-		
+
 		if ($this->input->post('cancel-button'))
 			redirect ('auth/user/index');
-		
+
 		$this->load->language('auth');
 	}
-	
+
 	/**
-	 * Display User list. 
+	 * Display User list.
 	 */
 	function index()
 	{
@@ -85,30 +90,30 @@ class User extends Admin_Controller
 				->set_css('../bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap')
 				->set_js('../bower_components/datatables/media/js/jquery.dataTables.min', TRUE)
 				->set_js('../bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min')
-				->set_js_script(' 
-					
+				->set_js_script('
+
 				')
 				->build('auth/index', $this->data);
 	}
-	
+
 	/**
 	 * Edit User
-	 * 
-	 * @param integer $id 
+	 *
+	 * @param integer $id
 	 */
 	function edit($id)
 	{
 		$this->_updatedata($id);
 	}
-	
+
 	/**
-	 * Add a new User. 
+	 * Add a new User.
 	 */
 	function add()
 	{
 		$this->_updatedata();
 	}
-	
+
 	/**
 	 * Update profile.
 	 */
@@ -117,17 +122,17 @@ class User extends Admin_Controller
 		$this->data['redirect'] = 'auth/user/profile';
 		$this->edit($this->auth->userid());
 	}
-	
+
 	/**
 	 * Update user data
-	 * 
+	 *
 	 * @param int $id
 	 */
 	function _updatedata($id = 0)
 	{
 		$this->load->library('form_validation');
 		$user_form = $this->user_form;
-		
+
 		// Update rules for update data
 		if ($id > 0)
 		{
@@ -136,16 +141,16 @@ class User extends Admin_Controller
 			$user_form['password']['rules']	= "trim|matches[confirm-password]";
 			$user_form['confirm-password']['rules']	= "trim";
 		}
-		
+
 		// Add language options
 		$languages = $this->config->item('languages', 'template');
 		foreach($languages as $code => $language)
 			$user_form['lang']['options'][$code] = $language['name'];
-		
+
 		// Add role options
 		$role_tree = $this->role_model->get_tree();
 		$user_form['role_id']['options'] = array(0 => '(' . lang('none') . ')') + $this->role_model->generate_options($role_tree);
-			
+
 		$this->form_validation->init($user_form);
 		// Set default value for update data
 		if ($id > 0)
@@ -162,34 +167,34 @@ class User extends Admin_Controller
 				$this->user_model->insert($this->form_validation->get_values());
 				$this->template->set_flashdata('info', lang('user_added'));
 			}
-			
+
 			if (isset($this->data['redirect']))
 				redirect($this->data['redirect']);
 			else
 				redirect('auth/user');
 		}
-		
+
 		$this->data['form'] = $this->form_validation;
 		$this->template->build('auth/user-form', $this->data);
 	}
-	
+
 	/**
 	 * Delete a User
-	 * 
-	 * @param integer $id 
+	 *
+	 * @param integer $id
 	 */
 	function delete($id)
 	{
 		$user = $this->user_model->get_by_id($id);
 		if ($user)
 			$this->user_model->delete($id);
-		
+
 		redirect('auth/user');
 	}
-	
+
 	/**
 	 * Validation callback function to check whether the username is unique
-	 * 
+	 *
 	 * @param string $value Username to check
 	 * @param int $id Don't check if the username has this ID
 	 * @return boolean
@@ -204,10 +209,10 @@ class User extends Admin_Controller
 			return FALSE;
 		}
 	}
-	
+
 	/**
 	 * Validation callback function to check whether the email is unique
-	 * 
+	 *
 	 * @param string $value Email to check
 	 * @param int $id Don't check if the email has this ID
 	 * @return boolean
@@ -222,7 +227,24 @@ class User extends Admin_Controller
 			return FALSE;
 		}
 	}
-	
+
+	public function view($id){
+		$this->load->library('table');
+
+		$data = $this->user_model->get_by_id($id);
+
+		$tmpl = array ( 'table_open'  => '<table class="table table-striped">');
+		$this->table->set_template($tmpl);
+
+		$this->table->add_row('Nama Depan', $data->first_name);
+		$this->table->add_row('Nama Belakang', $data->last_name);
+		$this->table->add_row('Nama User', $data->username);
+		$this->table->add_row('Email', $data->email);
+		$this->table->add_row('Role', $data->role_id);
+		$this->table->add_row('Bahasa', $data->lang);
+
+		echo $this->table->generate();
+	}
 }
 
 /* End of file user.php */
