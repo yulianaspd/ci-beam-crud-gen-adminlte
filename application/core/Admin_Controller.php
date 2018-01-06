@@ -40,7 +40,8 @@ class Admin_Controller extends MY_Controller
 			'email'			=> $user->email,
 			'lang'			=> $user->lang,
 			'role_id'		=> $user->role_id,
-			'role_name'		=> $user->role_name
+			'role_name'		=> $user->role_name,
+			'registered'		=> $user->registered
 		);
 		$this->load->vars('auth_user', $user_data);
 		$this->session->set_userdata($user_data);
