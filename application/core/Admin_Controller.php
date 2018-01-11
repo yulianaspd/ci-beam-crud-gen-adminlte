@@ -33,14 +33,14 @@ class Admin_Controller extends MY_Controller
 		// Get user from database
 		$user = $this->user_model->get_by_id($id);
 		$user_data = array(
-			'id'			=> $user->id,
-			'first_name'	=> $user->first_name,
-			'last_name'		=> $user->last_name,
-			'username'		=> $user->username,
-			'email'			=> $user->email,
-			'lang'			=> $user->lang,
-			'role_id'		=> $user->role_id,
-			'role_name'		=> $user->role_name,
+			'id'						=> $user->id,
+			'first_name'		=> $user->first_name,
+			'last_name'			=> $user->last_name,
+			'username'			=> $user->username,
+			'email'					=> $user->email,
+			'lang'					=> $user->lang,
+			'role_id'				=> $user->role_id,
+			'role_name'			=> $user->role_name,
 			'registered'		=> $user->registered
 		);
 		$this->load->vars('auth_user', $user_data);
